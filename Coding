@@ -1,0 +1,176 @@
+# CampusFlow – Smart Campus Queue & Crowd Management
+
+from collections import deque
+
+class CampusFlow:
+    def __init__(self):
+        self.queues = {
+            "Office": deque(),
+            "Canteen": deque(),
+            "Library": deque(),
+            "Transport": deque()
+        }
+
+        self.token_number = 1
+
+    def join_queue(self):
+        print("\nAvailable Services:")
+        services = list(self.queues.keys())
+
+        for i, service in enumerate(services, 1):
+            print(f"{i}. {service}")
+
+        try:
+            choice = int(input("Choose service: "))
+
+            if choice < 1 or choice > len(services):
+                print("Invalid choice!")
+                return
+
+            service = services[choice - 1]
+            name = input("Enter student name: ")
+
+            token = self.token_number
+            self.token_number += 1
+
+            self.queues[service].append((token, name))
+
+            print("\nQueue joined successfully!")
+            print(f"Student Name : {name}")
+            print(f"Service      : {service}")
+            print(f"Token Number : {token}")
+
+        except ValueError:
+            print("Please enter a valid number.")
+
+    def view_queues(self):
+        print("\n========== CAMPUS QUEUE STATUS ==========")
+
+        for service, queue in self.queues.items():
+            count = len(queue)
+
+            if count == 0:
+                status = "Low Crowd"
+            elif count <= 5:
+                status = "Medium Crowd"
+            else:
+                status = "High Crowd"
+
+            print(f"\n{service}")
+            print(f"Students Waiting : {count}")
+            print(f"Crowd Status     : {status}")
+
+            if queue:
+                print("Queue:")
+                for token, name in queue:
+                    print(f"  Token {token} - {name}")
+
+    def serve_student(self):
+        print("\nAvailable Services:")
+        services = list(self.queues.keys())
+
+        for i, service in enumerate(services, 1):
+            print(f"{i}. {service}")
+
+        try:
+            choice = int(input("Choose service: "))
+
+            if choice < 1 or choice > len(services):
+                print("Invalid choice!")
+                return
+
+            service = services[choice - 1]
+
+            if len(self.queues[service]) == 0:
+                print(f"No students waiting at {service}.")
+                return
+
+            token, name = self.queues[service].popleft()
+
+            print("\nStudent Served Successfully!")
+            print(f"Token Number : {token}")
+            print(f"Student Name : {name}")
+            print(f"Service      : {service}")
+
+        except ValueError:
+            print("Please enter a valid number.")
+
+    def find_student(self):
+        name = input("\nEnter student name to search: ")
+
+        found = False
+
+        for service, queue in self.queues.items():
+            for position, (token, student_name) in enumerate(queue, 1):
+                if student_name.lower() == name.lower():
+                    print("\nStudent Found!")
+                    print(f"Name     : {student_name}")
+                    print(f"Token    : {token}")
+                    print(f"Service  : {service}")
+                    print(f"Position : {position}")
+                    found = True
+
+        if not found:
+            print("Student is not currently in any queue.")
+
+    def dashboard(self):
+        total = sum(len(queue) for queue in self.queues.values())
+
+        print("\n========== CAMPUSFLOW DASHBOARD ==========")
+        print(f"Total Students Waiting : {total}")
+
+        if total == 0:
+            print("Overall Crowd Level    : LOW")
+        elif total <= 10:
+            print("Overall Crowd Level    : MEDIUM")
+        else:
+            print("Overall Crowd Level    : HIGH")
+
+
+def main():
+    campus = CampusFlow()
+
+    while True:
+        print("\n========================================")
+        print("       CAMPUSFLOW")
+        print(" Smart Campus Queue Management")
+        print("========================================")
+
+        print("1. Join Queue")
+        print("2. View Queue Status")
+        print("3. Serve Next Student")
+        print("4. Find Student")
+        print("5. Campus Dashboard")
+        print("6. Exit")
+
+        try:
+            choice = int(input("\nEnter your choice: "))
+
+            if choice == 1:
+                campus.join_queue()
+
+            elif choice == 2:
+                campus.view_queues()
+
+            elif choice == 3:
+                campus.serve_student()
+
+            elif choice == 4:
+                campus.find_student()
+
+            elif choice == 5:
+                campus.dashboard()
+
+            elif choice == 6:
+                print("\nThank you for using CampusFlow!")
+                break
+
+            else:
+                print("Invalid choice!")
+
+        except ValueError:
+            print("Please enter a valid number.")
+
+
+if __name__ == "__main__":
+    main()
